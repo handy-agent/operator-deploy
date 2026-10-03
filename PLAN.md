@@ -71,6 +71,16 @@ webhooks, redirects, keys, accounts): `../operator/dev/REQUIREMENTS.md` → "Sta
 - The local stage (`stages/local/deploy.sh`) was never started: it uses the operator repo's real `.env`
   on port 8000, where the `local.handyagent.dev` tunnel points.
 
+## Secret-leak risks (review 2026-10-03)
+Git is clean (no secrets in files or history); SSM SecureString, per-stage server roles, no SSH, root-only
+env file on the server, deploy prints counts only. Remaining:
+1. Plain-text secrets on the laptop: `.env` (Cloudflare token), `stages/<stage>/.env` (accepted trade-off).
+2. An IAM access key Roman created on 2026-10-03 is still active in AWS (local copy deleted) — delete it in
+   IAM when not needed.
+3. Laptop sign-in is the account root user — an IAM admin user would be safer.
+4. The Telegram token is part of its API URL: not logged today, but request logging (e.g. httpx at INFO)
+   would put it in the server logs. Thumbtack's Authorization header is already redacted in the traffic log.
+
 ## Open
 - Before the first develop deploy (Roman): `stages/develop/stage.yaml` env (business profile,
   `OPERATOR_ACCOUNT_ID`, `ANTHROPIC_AWS_WORKSPACE_ID`), Claude Platform on AWS subscription, a develop
