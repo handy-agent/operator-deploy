@@ -1,0 +1,11 @@
+{
+  "name": "operator-deploy",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^22",
+    "sst": "^3",
+    "typescript": "^5",
+    "yaml": "^2"
+  }
+}

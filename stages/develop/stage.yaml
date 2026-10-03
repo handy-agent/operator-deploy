@@ -1,0 +1,14 @@
+# develop stage — values only, no secrets. Read by ops.py and sst.config.ts.
+# Secrets: stages/develop/.env (git-ignored; names in .env.example) — deploy syncs them to SSM.
+name: develop
+domain: dev-api.handyagent.dev
+instance_type: t4g.small
+thumbtack_env: staging
+backups: false
+env:              # non-secret app env; deploy refuses while any value is blank
+  BUSINESS_OWNER:
+  BUSINESS_NAME:
+  BUSINESS_SERVICES:
+  BUSINESS_SERVICE_AREA:
+  OPERATOR_ACCOUNT_ID:
+  ANTHROPIC_AWS_WORKSPACE_ID:

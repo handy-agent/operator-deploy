@@ -1,0 +1,19 @@
+# What it does: systemd unit for Operator on the EC2 server: runs operator-start.sh, restarts it if it
+#   dies. Starts only once a deploy has set an image tag (until then the start script fails and systemd
+#   retries every 30 s).
+# When it runs: On boot; restarted by each deploy (SSM Run Command: systemctl restart operator).
+# What calls it: systemd; installed by common/server/user-data.sh.
+[Unit]
+Description=Operator (Handy Agent)
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/operator-start.sh
+ExecStop=/usr/bin/docker stop operator
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+# Local stage: Operator + DynamoDB Local in Docker (stages/local/docker-compose.yml).
+# App env (keys, business profile) comes from the operator repo's .env.
+name: local
+thumbtack_env: production   # now: ATX Handy Pros on real Thumbtack; staging later
+port: 8000                   # Operator (the local.handyagent.dev tunnel points here)
+dynamodb_port: 8002          # 8001 is the operator repo's own DynamoDB Local (sh/dynamo-local.sh)

@@ -1,0 +1,39 @@
+# What it does: The local stage — the same Operator image as AWS (common/Dockerfile) plus DynamoDB Local.
+#   DynamoDB data persists on the volume operator-local-dynamodb (survives restarts and remove.sh).
+#   App env: the operator repo's .env (keys, business profile), then the overrides below (from
+#   stages/local/stage.yaml via ops.py: DYNAMODB_TABLE, ports). Telegram polls (no TELEGRAM_WEBHOOK_URL).
+# When it runs: stages/local/deploy.sh (up --build), stages/local/remove.sh (down).
+# What calls it: common/local.py.
+name: operator-local
+
+services:
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    # root: writes to the fresh named volume (root-owned on creation). Local only.
+    user: root
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/data"]
+    ports:
+      - "${DYNAMODB_PORT}:8000"
+    volumes:
+      - dynamodb:/data
+
+  operator:
+    build:
+      context: ../../../operator
+      dockerfile: ${DOCKERFILE}
+    env_file:
+      - ../../../operator/.env
+    environment:
+      DB_BACKEND: dynamodb
+      DYNAMODB_ENDPOINT_URL: http://dynamodb:8000
+      DYNAMODB_TABLE: ${DYNAMODB_TABLE}
+      AWS_REGION: us-east-1
+      TELEGRAM_WEBHOOK_URL: ""
+    ports:
+      - "${PORT}:8000"
+    depends_on:
+      - dynamodb
+
+volumes:
+  dynamodb:
+    name: operator-local-dynamodb

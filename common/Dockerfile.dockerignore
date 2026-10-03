@@ -1,0 +1,7 @@
+# Build context = the operator repo. Send only what common/Dockerfile copies.
+*
+!requirements.txt
+!app/
+!agent/
+!db/
+**/__pycache__
